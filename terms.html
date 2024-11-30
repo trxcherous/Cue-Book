@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CueBook - Terms and Conditions</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #075b04;
+            color: white;
+            padding: 10px 20px;
+            font-size: 20px;
+            text-align: center;
+            z-index: 3; /* Ensure header is above the video and overlay */
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 80px;
+            width: 100px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        nav ul li {
+            position: relative;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav ul li a.active::after {
+            content: "";
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            height: 3px;
+            background-color: #1D1C1A;
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-greeting {
+            font-size: 20px;
+            border: 2px solid #1D1C1A;
+            border-radius: 10px;
+            padding: 5px 10px;
+        }
+
+        #signout a {
+            display: inline-block;
+            background-color: #1D1C1A;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: 0;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Adjust transparency here */
+            z-index: 1;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+            margin: auto;
+        }
+
+        .content h1{
+            color: white;
+        }
+
+        .terms-box {
+            border: 2px solid #075b04;
+            padding: 20px;
+            background-color: white;
+            margin-bottom: 50px;
+            max-width: 800px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .terms-box h1{
+            margin-top: 10px;
+            font-size: 25px;
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: black;
+        }
+
+        .terms-box h2{
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        .terms-box p{
+            font-size: 13px;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #075b04;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            flex-shrink: 0;
+            z-index: 3;
+            position: relative;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .contact-info {
+            flex: 1;
+            margin: 0;
+            text-align: left;
+        }
+
+        .contact-info p {
+            margin: 0;
+            display: block;
+        }
+
+        .social-media {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .social-media a {
+            margin-left: 0;
+        }
+
+        .social-media img {
+            width: 25px;
+            height: 25px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="cuebooklogo.png" alt="Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="profile.html" >Profile</a></li>
+                    <li><a href="table.html">Reserve A Table</a></li>
+                    <li><a href="#terms-and-conditions" class="active">Terms and Conditions</a></li>
+                    <li id="login"><a href="login.html">Login</a></li>
+                    <li id="signup"><a href="signup.html">Sign Up</a></li>
+                    <li id="hello-user" class="user-greeting" style="display:none;">Hello, User!</li>
+                    <li id="signout" style="display:none;"><a href="#" onclick="signOut()">Sign Out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <video autoplay muted loop id="bg-video">
+        <source src="bg2.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    
+    <div class="video-overlay"></div>
+
+    <div class="content">
+        <h1>Terms & Conditions</h1>
+        <div class="terms-box">
+            <h1> Welcome to CueBook! </h1>
+            <p>These terms and conditions outline the rules and regulations for the use of CueBook's Website and services.</p>
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing this website and using our services, you accept these terms and conditions in full. If you disagree with any part of these terms and conditions, please do not use CueBook.</p>
+            <h2>2. Reservations</h2>
+            <p>All reservations are subject to availability.</p>
+            <p>Customers must provide accurate contact information and agree to be contacted regarding their reservations. Reservations can be modified or canceled up to 24 hours before the reserved time without penalty. Cancellations made less than 24 hours in advance may incur a fee.</p>
+            <h2>3. Payment</h2>
+            <p>Payments must be made at the time of reservation.
+                Accepted payment methods include credit/debit cards and other online payment options as listed on our website.
+                Prices are subject to change but will not affect confirmed reservations.</p>
+            <h2>4. Conduct</h2>
+            <p>Customers are expected to behave respectfully and follow the rules of the venue.
+                Any form of harassment, abuse, or inappropriate behavior will result in immediate removal from the venue and potential banning from future reservations.</p>
+            <h2>5. Liability</h2>
+            <p>CueBook is not liable for any personal injuries or damages to personal property occurring at the venue.
+                Customers assume full responsibility for any damage they cause to the venue or its property.</p>
+            <h2>6. Privacy</h2>
+            <p>Personal information collected during the reservation process will be used solely for the purpose of managing reservations and providing better service.
+                We will not share your personal information with third parties without your consent, except as required by law.</p>
+            <h2>7. Changes to Terms</h2>
+            <p>CueBook reserves the right to revise these terms and conditions at any time. Users are encouraged to review the terms regularly to stay informed of any updates.</p>
+            <h2>8. Contact Us</h2>
+            <p>For any questions or concerns regarding these terms and conditions, please contact us at info@cuebook.com.</p>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="contact-info">
+                <p>1989 Billiards Street, Manila | Phone: (+63) 456-7890 | Email: info@cuebook.com</p>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/profile.php?id=61561739474115&mibextid=LQQJ4d"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="https://x.com/cuebook69?s=11&t=azPqdM20ugKR0tuqkKR4mw"><img src="twitter-icon.png" alt="Twitter"></a>
+                <a href="https://www.instagram.com/cuebook/?utm_source=ig_web_button_share_sheet"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAHEJtfNeC-sY7-b-j6FxEoiKrLr-FCTp4",
+            authDomain: "cuebook-23155.firebaseapp.com",
+            databaseURL: "https://cuebook-23155-default-rtdb.firebaseio.com",
+            projectId: "cuebook-23155",
+            storageBucket: "cuebook-23155.appspot.com",
+            messagingSenderId: "425152749588",
+            appId: "1:425152749588:web:5c2ab388175f6e11dfc701",
+            measurementId: "G-LDEG7PHHE2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Check if user is logged in
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                console.log("User is logged in:", user);
+                // Fetch additional user data from the database
+                var database = firebase.database();
+                var userRef = database.ref('users/' + user.uid);
+                userRef.once('value', function(snapshot) {
+                    var userData = snapshot.val();
+                    if (userData && userData.fullname) {
+                        var fullName = userData.fullname;
+                        console.log("User's full name:", fullName);
+                        document.getElementById("hello-user").innerText = "Hello, " + fullName + "!";
+                    } else {
+                        console.log("User data not found");
+                        document.getElementById("hello-user").innerText = "Hello, User!";
+                    }
+                    document.getElementById("login").style.display = "none";
+                    document.getElementById("signup").style.display = "none";
+                    document.getElementById("hello-user").style.display = "block";
+                    document.getElementById("signout").style.display = "block";
+                });
+            } else {
+                console.log("No user is logged in.");
+                window.location.href = "login.html"; // Redirect to login page if not logged in
+            }
+        });
+
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+
+        function signOut() {
+            firebase.auth().signOut().then(() => {
+                console.log('User signed out.');
+                window.location.href = "login.html"; // Redirect to login page after sign out
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

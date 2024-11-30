@@ -1,0 +1,164 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5dc; /* Light beige */
+    color: #333; /* Dark gray text */
+    overflow-x: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #075b04; /* Darker and muted deep green */
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+
+.logo img {
+    height: 80px;
+    width: 100px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+nav ul li {
+    position: relative;
+}
+
+nav ul li a {
+    display: block;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+}
+
+nav ul li a.active::after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: 3px; /* Height of the underline */
+    background-color: #1D1C1A; /* Color of the underline */
+    position: absolute;
+    bottom: -6px; /* Position the underline below the text */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background on hover */
+}
+
+
+#login a {
+    border: 2px solid #1D1C1A;
+    background-color: transparent;
+    color: white;
+}
+
+#signup a {
+    background-color: #1D1C1A; 
+    border: 2px solid #1D1C1A;
+    color: white;
+}
+
+.user-greeting {
+    border: 2px solid #1D1C1A;
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+#signout a {
+    background-color: #1D1C1A; /* Darker color fill */
+    border: 2px solid #1D1C1A;
+    border-radius: 10px;
+    padding: 5px 10px;
+    color: white;
+    text-decoration: none;
+}
+
+.tables {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 70px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 150px;
+    margin-left: 450px;
+    max-width: 800px; /* Adjust the max-width as needed */
+}
+
+.table {
+    background-image: url('table.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 2px solid #000;
+    height: 150px;
+    width: 270px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.table:hover {
+    background-color: rgba(85, 107, 47, 0.8);
+    cursor: pointer;
+}
+
+footer {
+    background-color: #075b04; /* Darker and muted deep green */
+    color: white;
+    padding: 10px; /* Reduced padding */
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; /* Space between for even distribution */
+    align-items: center;
+    gap: 20px; /* Increased gap between items */
+}
+
+.contact-info {
+    flex: 1; /* Allow items to grow */
+    margin: 0; /* Remove margin */
+    text-align: left; /* Left align the contact info */
+}
+
+.contact-info p {
+    margin: 0; /* Remove margin between contact info items */
+    display: block; /* Ensure block display */
+}
+
+.social-media {
+    display: flex;
+    justify-content: flex-end; /* Right align the social media icons */
+    margin-right: 12px;
+    gap: 10px; /* Gap between social media icons */
+}
+
+.social-media a {
+    margin-left: 0; /* Remove additional margin */
+}
+
+.social-media img {
+    width: 25px; /* Set the width of the icons */
+    height: 25px; /* Set the height of the icons */
+}

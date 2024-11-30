@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places"></script>
+</head>
+<body>
+    <video autoplay muted loop id="bg-video">
+        <source src="login-bg.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="CueBook Logo" class="logo">
+        </div>
+        <div class="login-form">
+            <form>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <i class="toggle-password fas fa-eye-slash" id="togglePassword"></i>
+                <button id="loginButton">Log In</button>
+            </form>
+            <p>DO NOT HAVE AN ACCOUNT? <a href="signup.html">SIGN UP</a></p>
+            <p><a href="#" id="forgotPasswordLink">RESET PASSWORD?</a></p>
+        </div>
+    
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideForgotPasswordModal()">&times;</span>
+            <h2>Forgot Password</h2>
+            <div class="input-group">
+                <input type="email" id="forgotPasswordEmail" placeholder="Enter your email" required>
+                <button id="sendResetEmailButton">Send Reset Email</button>
+            </div>
+            <div id="forgotPasswordErrorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

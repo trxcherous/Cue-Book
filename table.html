@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CueBook</title>
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="cuebooklogo.png" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#dashboard" onclick="navigateTo('dashboard.html')">Dashboard</a></li>
+                <li><a href="#profile" onclick="navigateTo('profile.html')">Profile</a></li>
+                <li><a href="#book-a-table" class="active">Reserve A Table</a></li>
+                <li><a href="#terms-and-conditions" onclick="navigateTo('terms.html')">Terms and Conditions</a></li>
+                <li id="login"><a href="#login">Login</a></li>
+                <li id="signup"><a href="#signup">Sign Up</a></li>
+                <li id="hello-user" class="user-greeting" style="display:none;">Hello, User!</li>
+                <li id="signout" style="display:none;"><a href="#signout" onclick="signOut()">Sign Out</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="tables">
+        <a href="#" class="table" id="table1" onclick="reserveTable('TABLE 1')">TABLE 1</a>
+        <a href="#" class="table" id="table2" onclick="reserveTable('TABLE 2')">TABLE 2</a>
+        <a href="#" class="table" id="table3" onclick="reserveTable('TABLE 3')">TABLE 3</a>
+        <a href="#" class="table" id="table4" onclick="reserveTable('TABLE 4')">TABLE 4</a>
+        <a href="#" class="table" id="table5" onclick="reserveTable('TABLE 5')">TABLE 5</a>
+        <a href="#" class="table" id="table6" onclick="reserveTable('TABLE 6')">TABLE 6</a>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="contact-info">
+                <p>1989 Billiards Street, Manila | Phone: (+63) 456-7890 | Email: info@cuebook.com</p>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/profile.php?id=61561739474115&mibextid=LQQJ4d"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="https://x.com/cuebook69?s=11&t=azPqdM20ugKR0tuqkKR4mw"><img src="twitter-icon.png" alt="Twitter"></a>
+                <a href="https://www.instagram.com/cuebook/?utm_source=ig_web_button_share_sheet"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        // Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAHEJtfNeC-sY7-b-j6FxEoiKrLr-FCTp4",
+            authDomain: "cuebook-23155.firebaseapp.com",
+            databaseURL: "https://cuebook-23155-default-rtdb.firebaseio.com",
+            projectId: "cuebook-23155",
+            storageBucket: "cuebook-23155.appspot.com",
+            messagingSenderId: "425152749588",
+            appId: "1:425152749588:web:5c2ab388175f6e11dfc701",
+            measurementId: "G-LDEG7PHHE2"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Check if user is logged in
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                console.log("User is logged in:", user);
+                // Fetch additional user data from the database
+                var database = firebase.database();
+                var userRef = database.ref('users/' + user.uid);
+                userRef.once('value', function(snapshot) {
+                    var userData = snapshot.val();
+                    if (userData && userData.fullname) {
+                        var fullName = userData.fullname;
+                        console.log("User's full name:", fullName);
+                        document.getElementById("hello-user").innerText = "Hello, " + fullName + "!";
+                    } else {
+                        console.log("User data not found");
+                        document.getElementById("hello-user").innerText = "Hello, User!";
+                    }
+                    document.getElementById("login").style.display = "none";
+                    document.getElementById("signup").style.display = "none";
+                    document.getElementById("hello-user").style.display = "block";
+                    document.getElementById("signout").style.display = "block";
+                });
+            } else {
+                console.log("No user is logged in.");
+                window.location.href = "login.html"; // Redirect to login page if not logged in
+            }
+        });
+
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+
+        function signOut() {
+            firebase.auth().signOut().then(() => {
+                console.log('User signed out.');
+                window.location.href = "login.html"; // Redirect to login page after sign out
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+            });
+        }
+
+        // Reserve table function
+        function reserveTable(tableName) {
+            var user = firebase.auth().currentUser;
+            if (user) {
+                // Save table name to localStorage instead of database
+                localStorage.setItem('reservedTable', tableName);
+                console.log("Table reserved:", tableName);
+                window.location.href = "reservation.html"; // Redirect to reservation confirmation or details page
+            } else {
+                console.log("No user is logged in.");
+                window.location.href = "login.html"; // Redirect to login page if not logged in
+            }
+        }
+
+        document.getElementById("sign-out").addEventListener("click", function() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+
+    </script>
+</body>
+</html>

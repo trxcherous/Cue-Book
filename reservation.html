@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Table Reservation</title>
+   <link rel="stylesheet" href="reservation.css">
+   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+   <header>
+       <div class="logo">
+           <img src="cblogo.png" alt="Logo">
+       </div>
+       <div class="user-nav">
+           <nav>
+               <ul>
+					<li><a href="#dashboard" onclick="navigateTo('dashboard.html')">Dashboard</a></li>
+					<li><a href="#profile" onclick="navigateTo('profile.html')">Profile</a></li>
+					<li><a href="#book-a-table" class="active">Reserve A Table</a></li>
+					<li><a href="#terms-and-conditions" onclick="navigateTo('terms.html')">Terms and Conditions</a></li>
+               </ul>
+           </nav>
+           <div class="user-info">
+			<div>
+               <span id="user-name">Hello, User!</span>
+           </div>
+       </div>
+	   		<a href="login.html" id="sign-out" alt="Sign Out">Sign Out</a>
+   </header>
+
+   <div class="reservation-form">
+       <h2 id="table-number">RESERVING: TABLE</h2>
+       <form id="reservation-form">
+           <div class="date-time-group">
+               <div class="form-group">
+                   <label for="reservation-date">Date of Reservation:</label>
+                   <input type="text" id="reservation-date" placeholder="MM/DD/YY" readonly>
+               </div>
+               <div class="form-group">
+                   <label for="starting-time">Starting Time:</label>
+                   <select id="starting-time" disabled>
+					   <option value="">Select Time</option>
+                       <option value="10:00">10:00</option>
+                       <option value="11:00">11:00</option>
+                       <option value="12:00">12:00</option>
+                       <option value="13:00">13:00</option>
+                       <option value="14:00">14:00</option>
+                       <option value="15:00">15:00</option>
+                       <option value="16:00">16:00</option>
+                       <option value="17:00">17:00</option>
+                       <option value="18:00">18:00</option>
+                       <option value="19:00">19:00</option>
+                   </select>
+               </div>
+           </div>
+
+           <div class="form-group">
+               <label for="hours">How many hours:</label>
+               <input type="number" id="hours" min="1" max="10" disabled>
+               <p id="hours-warning" style="color: red; display: none;">You cannot book more than the allowed hours.</p>
+           </div>
+
+           <div class="form-group">
+               <label for="contact-name">Contact Name:</label>
+               <div class="name-input">
+                   <input type="text" id="first-name" placeholder="First" disabled>
+                   <input type="text" id="last-name" placeholder="Last" disabled>
+               </div>
+           </div>
+
+           <div class="form-group">
+               <label for="phone-number">Phone Number:</label>
+               <input type="text" id="phone-number" placeholder="###########" disabled>
+           </div>
+
+           <button type="submit" disabled>PROCEED TO CHECKOUT</button>
+       </form>
+   </div>
+
+   <footer>
+	<div class="footer-content">
+		<div class="contact-info">
+			<p>1989 Billiards Street, Manila | Phone: (+63) 456-7890 | Email: info@cuebook.com</p>
+		</div>
+		<div class="social-media">
+			<a href="https://www.facebook.com/profile.php?id=61561739474115&mibextid=LQQJ4d"><img src="facebook-icon.png" alt="Facebook"></a>
+			<a href="https://x.com/cuebook69?s=11&t=azPqdM20ugKR0tuqkKR4mw"><img src="twitter-icon.png" alt="Twitter"></a>
+			<a href="https://www.instagram.com/cuebook/?utm_source=ig_web_button_share_sheet"><img src="instagram-icon.png" alt="Instagram"></a>
+		</div>
+	</div>
+</footer>
+
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+   <script>
+       var firebaseConfig = {
+           apiKey: "AIzaSyAHEJtfNeC-sY7-b-j6FxEoiKrLr-FCTp4",
+           authDomain: "cuebook-23155.firebaseapp.com",
+           databaseURL: "https://cuebook-23155-default-rtdb.firebaseio.com",
+           projectId: "cuebook-23155",
+           storageBucket: "cuebook-23155.appspot.com",
+           messagingSenderId: "425152749588",
+           appId: "1:425152749588:web:5c2ab388175f6e11dfc701",
+           measurementId: "G-LDEG7PHHE2"
+       };
+
+       firebase.initializeApp(firebaseConfig);
+
+       firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				console.log("User is logged in:", user);
+				var database = firebase.database();
+				var userRef = database.ref('users/' + user.uid);
+				userRef.once('value', function(snapshot) {
+					var userData = snapshot.val();
+					if (userData) {
+						if (userData.fullname) {
+							var fullName = userData.fullname;
+							console.log("User's full name:", fullName);
+							document.getElementById('user-name').textContent = `Hello, ${fullName}!`;
+
+							// Split the fullname into first and last name
+							var nameParts = fullName.split(' ');
+							document.getElementById('first-name').value = nameParts[0];
+							document.getElementById('last-name').value = nameParts[1] ? nameParts[1] : '';
+						}
+
+						if (userData.phnum) {
+							var phoneNumber = userData.phnum;
+							console.log("User's phone number:", phoneNumber);
+							document.getElementById('phone-number').value = phoneNumber;
+						}
+					}
+
+					var tableNumber = localStorage.getItem('reservedTable');
+					if (tableNumber) {
+						console.log("Reserved table:", tableNumber);
+						document.getElementById('table-number').textContent = `RESERVING: ${tableNumber}`;
+					} else {
+						console.log("No reservation data found.");
+						document.getElementById('table-number').textContent = "No Reservation Found";
+						window.location.href = "dashboard.html";
+					}
+				});
+			} else {
+				console.log("No user is logged in.");
+				window.location.href = "login.html";
+			}
+		});
+
+       document.getElementById("sign-out").addEventListener("click", function() {
+           firebase.auth().signOut().then(() => {
+               window.location.href = "login.html";
+           }).catch((error) => {
+               console.error("Sign out error:", error);
+           });
+       });
+
+		$(function() {
+			var fullyBookedDates = {};
+
+			// Function to fetch fully booked dates from Firebase
+			function fetchFullyBookedDates() {
+				var startDate = new Date();
+				var endDate = new Date();
+				endDate.setFullYear(endDate.getFullYear() + 1);
+				
+				for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+					var dateText = $.datepicker.formatDate('mm/dd/yy', d);
+					fetchFullyBookedStatusForDate(dateText);
+				}
+			}
+
+			function fetchFullyBookedStatusForDate(dateText) {
+				var dateParts = dateText.split('/');
+				var year = dateParts[2];
+				var month = dateParts[0];
+				var day = dateParts[1];
+
+				var tableNumber = localStorage.getItem('reservedTable');
+				if (!tableNumber) {
+					return;
+				}
+
+				var numericTableNumber = tableNumber.match(/\d+/)[0];
+				var tableRef = 'Table ' + numericTableNumber;
+				var dateRef = firebase.database().ref('Dates/' + year + '/' + month + '/' + day + '/' + tableRef);
+
+				dateRef.once('value', function(snapshot) {
+					var bookedTimes = [];
+					snapshot.forEach(function(childSnapshot) {
+						bookedTimes.push(childSnapshot.key);
+					});
+
+					if (bookedTimes.length >= 10) {
+						fullyBookedDates[dateText] = true;
+					}
+				});
+			}
+
+			// Function to check if a date is fully booked
+			function checkDateAvailability(date) {
+				var formattedDate = $.datepicker.formatDate('mm/dd/yy', date);
+				
+				// Disable past dates
+				if (date < new Date().setHours(0,0,0,0)) {
+					return [false, "", "Unavailable"];
+				}
+
+				// Check if the selected date is today and it's beyond 19:00
+				if (date.toDateString() === new Date().toDateString()) {
+					if (new Date().getHours() >= 19) {
+						alert('Booking is not allowed after 19:00 on the current day.');
+						$('#reservation-date').datepicker('setDate', null);
+						resetFormFields();
+						return [false, "", "Unavailable"];
+					}
+				}
+
+				// Check if the date is fully booked
+				if (fullyBookedDates[formattedDate]) {
+					return [false, "", "Fully Booked"];
+				}
+
+				return [true, "", ""];
+			}
+
+			// Initialize datepicker
+			$("#reservation-date").datepicker({
+				dateFormat: 'mm/dd/yy',
+				minDate: 0,
+				maxDate: '+2m',
+				beforeShowDay: function(date) {
+					return checkDateAvailability(date);
+				},
+				onSelect: function(dateText) {
+					var tableNumber = localStorage.getItem('reservedTable');
+					if (tableNumber) {
+						console.log("Selected date:", dateText);
+						console.log("Table number:", tableNumber);
+						resetTimeDropdown(); // Reset time dropdown before fetching new times
+						fetchBookedTimes(dateText, tableNumber);
+						enableFormFields();
+
+						// If the selected date is today, disable past times
+						var selectedDate = new Date(dateText);
+						var today = new Date();
+						if (selectedDate.toDateString() === today.toDateString()) {
+							disablePastTimes(today);
+						}
+					} else {
+						alert('No table selected.');
+					}
+				}
+			});
+
+			// Fetch fully booked dates when the page loads
+			fetchFullyBookedDates();
+		});
+
+
+
+			function disablePastTimes(currentTime) {
+				var currentHours = currentTime.getHours();
+				var currentMinutes = currentTime.getMinutes();
+				var timeDropdown = document.getElementById('starting-time');
+				var options = timeDropdown.options;
+
+				for (var i = 0; i < options.length; i++) {
+					var optionTime = parseTime(options[i].value);
+					if (optionTime < currentHours || (optionTime === currentHours && currentMinutes > 0)) {
+						options[i].disabled = true;
+						console.log("Disabled past time:", options[i].value);
+					}
+				}
+
+				// Disable the date if current time is beyond 19:00
+				if (currentHours >= 19) {
+					alert('Booking is not allowed after 19:00 on the current day.');
+					$('#reservation-date').datepicker('setDate', null);
+					resetFormFields();
+				}
+			}
+
+
+
+			function fetchBookedTimes(dateText, tableNumber) {
+				var dateParts = dateText.split('/');
+				var year = dateParts[2];
+				var month = dateParts[0];
+				var day = dateParts[1];
+
+				var numericTableNumber = tableNumber.match(/\d+/)[0];
+
+				var tableRef = 'Table ' + numericTableNumber;
+				var dateRef = firebase.database().ref('Dates/' + year + '/' + month + '/' + day + '/' + tableRef);
+
+				console.log("Firebase reference:", dateRef.toString());
+
+				dateRef.once('value', function(snapshot) {
+					var bookedTimes = [];
+					snapshot.forEach(function(childSnapshot) {
+						bookedTimes.push(childSnapshot.key); // Get the key (time) directly
+					});
+					console.log("Booked times:", bookedTimes);
+					
+					// Check if all times are booked for the day
+					if (bookedTimes.length >= 10) {
+						alert('All times are fully booked for this table on the selected date.');
+						$('#reservation-date').datepicker('setDate', null);
+						resetFormFields();
+						return;
+					}
+
+					disableBookedTimes(bookedTimes);
+					checkAvailableHours(bookedTimes);
+				});
+			}
+
+
+			
+			// Function to check available hours and set max allowed hours
+			function checkAvailableHours(bookedTimes) {
+				var startingTimeDropdown = document.getElementById('starting-time');
+				var hoursInput = document.getElementById('hours');
+
+				startingTimeDropdown.addEventListener('change', function() {
+					var selectedTime = startingTimeDropdown.value;
+					if (selectedTime) {
+						var selectedHour = parseTime(selectedTime);
+						var maxHours = calculateMaxHours(selectedHour, bookedTimes);
+						hoursInput.max = maxHours;
+
+						if (parseInt(hoursInput.value, 10) > maxHours) {
+							hoursInput.value = maxHours; // Update value if it exceeds max
+						}
+
+						var hoursWarning = document.getElementById('hours-warning');
+						if (maxHours < 1) {
+							hoursWarning.style.display = 'block';
+							hoursWarning.textContent = 'No available hours for the selected time.';
+							hoursInput.disabled = true;
+						} else {
+							hoursWarning.style.display = 'none';
+							hoursInput.disabled = false;
+							//alert(`You can book up to ${maxHours} hours starting from ${selectedTime}.`);
+						}
+					}
+				});
+
+				// Event listener to handle manual input changes
+				hoursInput.addEventListener('input', function() {
+					var maxHours = parseInt(hoursInput.max, 10);
+					var enteredHours = parseInt(hoursInput.value, 10);
+
+					if (enteredHours > maxHours) {
+						hoursInput.value = maxHours; // Update value if it exceeds max
+					}
+				});
+			}
+
+
+			function calculateMaxHours(selectedHour, bookedTimes) {
+				var closingTime = 20;
+				var maxHours = closingTime - selectedHour; // Maximum hours until closing time
+
+				for (var i = 0; i < bookedTimes.length; i++) {
+					var bookedHour = parseTime(bookedTimes[i]);
+					if (bookedHour > selectedHour) {
+						maxHours = Math.min(maxHours, bookedHour - selectedHour);
+						break;
+					}
+				}
+				return maxHours;
+			}
+
+
+
+			function resetTimeDropdown() {
+				var timeDropdown = document.getElementById('starting-time');
+				var options = timeDropdown.options;
+
+				for (var i = 0; i < options.length; i++) {
+					options[i].disabled = false; // Enable all options
+				}
+
+				timeDropdown.selectedIndex = 0; // Reset dropdown selection to default
+			}
+
+			function disableBookedTimes(bookedTimes) {
+				var timeDropdown = document.getElementById('starting-time');
+				var options = timeDropdown.options;
+
+				bookedTimes.forEach(function(bookedTime) {
+					for (var i = 0; i < options.length; i++) {
+						if (options[i].value === bookedTime) {
+							options[i].disabled = true; // Disable booked times
+							console.log("Greyed out time:", bookedTime);
+						}
+					}
+				});
+			}
+
+			function enableFormFields() {
+				document.getElementById('starting-time').disabled = false;
+				document.getElementById('hours').disabled = false;
+				document.getElementById('first-name').disabled = false;
+				document.getElementById('last-name').disabled = false;
+				document.getElementById('phone-number').disabled = false;
+				document.querySelector('button[type="submit"]').disabled = false;
+			}
+
+
+		   document.getElementById('reservation-form').addEventListener('submit', function(event) {
+			   event.preventDefault();
+
+			   var user = firebase.auth().currentUser;
+			   if (!user) {
+				   console.log("No user is logged in.");
+				   window.location.href = "login.html";
+				   return;
+			   }
+
+			   var tableNumber = document.getElementById('table-number').textContent.split(' ')[2];
+			   var reservationDate = document.getElementById('reservation-date').value;
+			   var startingTime = document.getElementById('starting-time').value;
+			   var hours = parseInt(document.getElementById('hours').value, 10);
+			   var firstName = document.getElementById('first-name').value;
+			   var lastName = document.getElementById('last-name').value;
+			   var phoneNumber = document.getElementById('phone-number').value;
+				
+				if (!startingTime || startingTime === "") {
+				alert('Please select a starting time.');
+				return;
+			}
+			
+				if (!validateContactNumber(phoneNumber)) {
+				alert('Please enter a valid phone number in the format 09XXXXXXXXX or +639XXXXXXXXX.');
+				return;
+			}
+				
+			   var startTime = parseTime(startingTime);
+			   var endTime = startTime + hours;
+
+			   if (endTime > 20) {
+				   document.getElementById('hours-warning').style.display = 'block';
+				   return;
+			   } else {
+				   document.getElementById('hours-warning').style.display = 'none';
+			   }
+
+			   var reservationData = {
+				   table: tableNumber,
+				   date: reservationDate,
+				   time: startingTime,
+				   hours: hours,
+				   firstName: firstName,
+				   lastName: lastName,
+				   phone: phoneNumber
+			   };
+
+			   var userRef = firebase.database().ref('users/' + user.uid + '/reservations');
+			   var newReservationRef = userRef.push();
+			   newReservationRef.set(reservationData)
+				   .then(() => {
+					   console.log("Reservation data saved successfully.");
+					   window.location.href = "receipt.html";
+				   })
+				   .catch((error) => {
+					   console.error("Error saving reservation data:", error);
+				   });
+
+			   // Save date and time details in a separate node
+			   var dateParts = reservationDate.split('/');
+			   var year = dateParts[2];
+			   var month = dateParts[0];
+			   var day = dateParts[1];
+			   var dateRef = firebase.database().ref('Dates/' + year + '/' + month + '/' + day + '/Table ' + tableNumber);
+
+			   var times = [];
+			   for (var i = 0; i < hours; i++) {
+				   times.push(formatTime(startTime));
+				   startTime += 1;
+			   }
+
+			   times.forEach((time) => {
+				   dateRef.child(time).set(true) // Setting the node with the time as key
+					   .then(() => {
+						   console.log("Time data saved successfully:", time);
+					   })
+					   .catch((error) => {
+						   console.error("Error saving time data:", error);
+					   });
+			   });
+
+			   // Reset form fields after submission
+			   document.getElementById('reservation-form').reset();
+			   document.getElementById('starting-time').selectedIndex = 0;
+			   document.getElementById('hours').value = '';
+			   document.getElementById('first-name').value = '';
+			   document.getElementById('last-name').value = '';
+			   document.getElementById('phone-number').value = '';
+
+			   // Optionally, display a success message or navigate to another page
+			   alert('Reservation completed successfully!');
+		   });
+
+		   function parseTime(timeStr) {
+			   var parts = timeStr.split(':');
+			   var hours = parseInt(parts[0], 10);
+			   return hours;
+		   }
+
+		   function formatTime(hours) {
+			   return hours + ':00';
+		   }
+		   
+		   function validateContactNumber(contactNumber) {
+			// Regular expression to match Philippines phone number format
+			var regex = /^(09|\+639)\d{9}$/;
+
+			// Check if the contact number matches the regex pattern
+			return regex.test(contactNumber);
+		}
+		   
+		   function navigateTo(url) {
+				window.location.href = url;
+			}
+		   
+	   </script>
+	</body>
+	</html>

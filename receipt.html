@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Page</title>
+    <link rel="stylesheet" type="text/css" href="receipt.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="table.html" class="active">Reserve A Table</a></li>
+                <li><a href="terms.html#terms-and-conditions">Terms and Conditions</a></li>
+                <li id="hello-user" style="display:none;">Hello, User!</li>
+                <li id="done"><a href="#" onclick="signOut()">Done</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" id="receipt-container">
+        <div class="receipt-header">
+            <img src="logo.png" alt="CueBook Logo" class="logo">
+            <h2>Receipt</h2>
+        </div>
+        <div class="receipt-details">
+            <p><strong>Transaction ID:</strong> <span id="transaction-id"></span></p>
+            <p><strong>Date:</strong> <span id="reservation-date"></span></p>
+            <p><strong>Time of Booking:</strong> <span id="starting-time"></span></p>
+            <p><strong>Name:</strong> <span id="guest-name"></span></p>
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <hr>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reserved Table</th>
+                        <th>Time Reserved</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="reserved-tables-body">
+                    <!-- Reserved tables will be dynamically added here -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong id="total-amount"></strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="contact-info">
+                <p>1989 Billiards Street, Manila | Phone: (+63) 456-7890 | Email: info@cuebook.com</p>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/profile.php?id=61561739474115&mibextid=LQQJ4d"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="https://x.com/cuebook69?s=11&t=azPqdM20ugKR0tuqkKR4mw"><img src="twitter-icon.png" alt="Twitter"></a>
+                <a href="https://www.instagram.com/cuebook/?utm_source=ig_web_button_share_sheet"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var firebaseConfig = {
+                apiKey: "AIzaSyAHEJtfNeC-sY7-b-j6FxEoiKrLr-FCTp4",
+                authDomain: "cuebook-23155.firebaseapp.com",
+                databaseURL: "https://cuebook-23155-default-rtdb.firebaseio.com",
+                projectId: "cuebook-23155",
+                storageBucket: "cuebook-23155.appspot.com",
+                messagingSenderId: "425152749588",
+                appId: "1:425152749588:web:5c2ab388175f6e11dfc701",
+                measurementId: "G-LDEG7PHHE2"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    console.log('User logged in:', user.uid);
+                    var userRef = firebase.database().ref('users/' + user.uid);
+                    userRef.once('value', function(snapshot) {
+                        var userData = snapshot.val();
+                        if (userData) {
+                            console.log('User data:', userData);
+                            document.getElementById('hello-user').style.display = 'block';
+                            document.getElementById('hello-user').textContent = 'Hello, ' + userData.fullname + '!';
+                            document.getElementById('user-email').textContent = user.email;
+                        }
+
+                        var reservationsRef = firebase.database().ref('users/' + user.uid + '/reservations');
+                        reservationsRef.orderByChild('timestamp').limitToLast(1).once('value', function(reservationsSnapshot) {
+                            var reservations = reservationsSnapshot.val();
+                            console.log('Reservations:', reservations);
+                            if (reservations) {
+                                var transactionId = Object.keys(reservations)[0];
+                                console.log('Transaction ID:', transactionId);
+                                var reservation = reservations[transactionId];
+                                var guestName = reservation.firstName + ' ' + reservation.lastName;
+                                document.getElementById('guest-name').textContent = guestName;
+                                document.getElementById('transaction-id').textContent = transactionId;
+                                document.getElementById('reservation-date').textContent = reservation.date;
+                                document.getElementById('starting-time').textContent = reservation.time;
+
+                                // Check if reservation.table exists and is not null
+                                if (reservation.table !== undefined && reservation.table !== null) {
+                                    var reservedTablesBody = document.getElementById('reserved-tables-body');
+                                    var tableRows = '';
+                                    var pricePerHour = 50; // Assuming $50 per hour
+                                    var hoursReserved = reservation.hours; // Assuming hours is provided in the reservation
+
+                                    var totalPrice = pricePerHour * hoursReserved;
+
+                                    console.log('Table Number:', reservation.table);
+                                    console.log('Total Price:', totalPrice);
+
+                                    tableRows += '<tr>';
+                                    tableRows += '<td>Table ' + reservation.table + '</td>';
+                                    tableRows += '<td>' + hoursReserved + ' hour(s)</td>';
+                                    tableRows += '<td>$' + totalPrice.toFixed(2) + '</td>';
+                                    tableRows += '</tr>';
+
+                                    reservedTablesBody.innerHTML = tableRows;
+                                    document.getElementById('total-amount').textContent = '$' + totalPrice.toFixed(2);
+                                } else {
+                                    console.log('No table found in the reservation.');
+                                }
+                            } else {
+                                console.log('No reservations found.');
+                            }
+                        });
+                    });
+                } else {
+                    console.log('No user logged in.');
+                }
+            });
+
+            function signOut() {
+                firebase.auth().signOut().then(() => {
+                    console.log('User signed out.');
+                    window.location.href = "login.html"; // Redirect to login page after sign out
+                }).catch((error) => {
+                    console.error('Sign out error:', error);
+                });
+            }
+
+            document.getElementById('download-button').addEventListener('click', function() {
+                html2canvas(document.getElementById('receipt-container')).then(function(canvas) {
+                    var link = document.createElement('a');
+                    link.download = 'receipt.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

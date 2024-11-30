@@ -1,0 +1,200 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5dc;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #075b04; /* Darker and muted deep green */
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+
+.logo img {
+    height: 80px;
+    width: 100px;
+}
+
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid #1D1C1A;
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+#sign-out {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #1D1C1A;
+    border: 2px solid #1D1C1A;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+nav ul li {
+    position: relative;
+}
+
+nav ul li a {
+    display: block;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+}
+
+nav ul li a.active::after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: 3px; /* Height of the underline */
+    background-color: #1D1C1A; /* Color of the underline */
+    position: absolute;
+    bottom: -6px; /* Position the underline below the text */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background on hover */
+}
+
+.reservation-form {
+    background-color: #d9d9d9;
+    padding: 40px;
+    max-width: 800px;
+    margin: 50px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.reservation-form h2 {
+    text-align: center;
+    margin-top: 1px;
+    margin-bottom: 30px;
+    font-size: 50px;
+}
+
+.reservation-form .date-time-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.reservation-form .form-group {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.reservation-form label {
+    display: block;
+    margin: 5px 0;
+}
+
+.reservation-form input {
+    width: 100%;
+    padding: 15px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.2em;
+    box-sizing: border-box; /* Ensure padding and border are included in width */
+}
+
+.reservation-form .name-input {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.reservation-form .name-input input {
+    width: calc(50% - 10px);
+}
+
+.reservation-form button {
+    width: 100%;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.reservation-form button:hover {
+    background-color: #555;
+}
+
+footer {
+    background-color: #075b04; /* Darker and muted deep green */
+    color: white;
+    padding: 10px; /* Reduced padding */
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; /* Use space-between for even distribution */
+    align-items: center;
+    gap: 20px; /* Increased gap between items */
+}
+
+.contact-info, .social-media {
+    margin: 0; /* Remove margin */
+    text-align: center; /* Center the content */
+}
+
+.contact-info p {
+    margin: 0; /* Remove margin */
+    display: block; /* Ensure block display */
+}
+
+.social-media {
+    display: flex;
+    justify-content: flex-end; /* Align social media icons to the right */
+    gap: 10px; /* Gap between social media icons */
+}
+
+.social-media a {
+    margin-left: 0; /* Remove additional margin */
+}
+
+.social-media img {
+    width: 25px; /* Set the width of the icons */
+    height: 25px; /* Set the height of the icons */
+}

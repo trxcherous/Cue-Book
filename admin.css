@@ -1,0 +1,157 @@
+body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+ .profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.popup-profile-img {
+    width: 100px;  /* Adjust size as needed */
+    height: 100px; /* Adjust size as needed */
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+	background-color: #fefefe;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%;
+	max-width: 600px;
+	overflow-y: auto;
+	max-height: 70vh;
+}
+
+.close {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.reservation-item {
+	cursor: pointer;
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+}
+
+.reservation-item:hover {
+	background-color: #f5f5f5;
+}
+
+.cancel-button {
+	background-color: red;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+.cancel-button:hover {
+	background-color: darkred;
+}
+
+.back-button {
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+.back-button:hover {
+	background-color: #0056b3;
+}
+
+.receipt-header .logo {
+	height: 90px;
+	width: 100px;
+	margin-bottom: 10px;
+}
+
+.receipt-details {
+	text-align: left;
+}
+
+.receipt-details p {
+	margin: 10px 0;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+table th, table td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+}
+
+table th {
+	background-color: #0a7d05; /* Deep green */
+	color: white;
+}
+
+table tfoot td {
+	font-weight: bold;
+}
+
+/* Position the sign-out button */
+#signout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#signout-button:hover {
+    background-color: #cc0000;
+}

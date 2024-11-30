@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billiards Loading</title>
+<style>
+  body {
+    background: url('./pooltable.jpg') no-repeat center center; /* Replace with the correct path to your background image */
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff; /* White text */
+    transition: background 0.5s ease-out; /* Smooth transition */
+  }
+  
+  .loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better visibility of the text */
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .balls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .ball {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-size: cover;
+    animation: bounce 1.5s infinite ease-in-out;
+  }
+  
+  .ball:nth-child(1) {
+    background-image: url('./ball1.png'); /* Replace with the correct path to your first billiard ball image */
+  }
+  
+  .ball:nth-child(2) {
+    background-image: url('./ball2.png'); /* Replace with the correct path to your second billiard ball image */
+  }
+  
+  .ball:nth-child(3) {
+    background-image: url('./ball3.png'); /* Replace with the correct path to your third billiard ball image */
+  }
+  
+  .ball:nth-child(4) {
+    background-image: url('./ball4.png'); /* Replace with the correct path to your fourth billiard ball image */
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  .text {
+    font-size: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="loader" id="loader">
+  <div class="balls-container">
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+    <div class="ball"></div>
+  </div>
+  <div class="text">Rack 'em up... Loading...</div>
+</div>
+
+<script>
+  setTimeout(function() {
+    document.getElementById('loader').style.display = 'none';
+    document.body.style.background = '#0b6623'; // Change background to dark green
+  }, 3000);
+</script>
+</body>
+</html>

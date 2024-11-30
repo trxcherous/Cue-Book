@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="profile.css">
+	<style>
+        /* Loading screen styles */
+        body.loading {
+            background: url('./pooltable.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+        
+        .loader {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			background-color: rgba(0, 0, 0, 0.5);
+			padding: 20px;
+			border-radius: 10px;
+			z-index: 1000;
+		}
+        
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .ball {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-size: cover;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .ball:nth-child(1) { background-image: url('./ball1.png'); }
+        .ball:nth-child(2) { background-image: url('./ball2.png'); }
+        .ball:nth-child(3) { background-image: url('./ball3.png'); }
+        .ball:nth-child(4) { background-image: url('./ball4.png'); }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .text {
+            font-size: 24px;
+        }
+
+        body.loading header,
+		body.loading .profile-container,
+		body.loading footer {
+			display: none;
+		}
+    </style>
+</head>
+<body class="loading">
+    <div class="loader" id="loader">
+        <div class="balls-container">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="text">Rack 'em up... Loading...</div>
+    </div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="cuebooklogo.png" alt="Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="profile.html" class="active">Profile</a></li>
+                    <li><a href="table.html">Reserve A Table</a></li>
+                    <li><a href="terms.html">Terms and Conditions</a></li>
+                    <li id="login"><a href="login.html">Login</a></li>
+                    <li id="signup"><a href="signup.html">Sign Up</a></li>
+                    <li id="hello-user" class="user-greeting" style="display:none;">Hello, User!</li>
+                    <li id="signout" style="display:none;"><a href="#" onclick="signOut()">Sign Out</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <h2>Profile Information</h2>
+        <div class="profile-info">
+            <div class="profile-picture">
+                <input type="file" id="logo-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                <div class="profile-picture-container" onclick="document.getElementById('logo-upload').click()">
+                    <img src="cbprofile.png" alt="Profile Picture" class="profile-picture" id="profile-picture">
+                    <p class="upload-text">Upload</p>
+                </div>
+            </div>
+            <div class="profile-details">
+                <div id="nameContainer" class="editable-container">
+                    <h1 id="nameDisplay" onclick="editField('name')">Name</h1>
+                </div>
+                <p id="emailDisplay">Email: </p>
+                <div id="numberContainer" class="editable-container">
+                    <p id="numberDisplay" onclick="editField('number')">Number: </p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="bookings">
+            <div class="booking-history">
+                <h2>History</h2>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Booking Receipt -->
+    <div id="bookingReceiptModal" class="modal">
+        <div id="bookingReceiptDetails" class="modal-content">
+            <span class="close" onclick="closeBookingReceiptModal()">&times;</span>
+            <div class="receipt-header">
+                <img src="logo.png" alt="CueBook Logo" class="logo">
+                <h2>Receipt</h2>
+            </div>
+            <div class="receipt-details">
+                <p><strong>Transaction ID:</strong> <span id="transaction-id"></span></p>
+                <p><strong>Date:</strong> <span id="reservation-date"></span></p>
+                <p><strong>Time of Booking:</strong> <span id="starting-time"></span></p>
+                <p><strong>Name:</strong> <span id="guest-name"></span></p>
+                <p><strong>Email:</strong> <span id="user-email"></span></p>
+                <hr>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reserved Table</th>
+                            <th>Time Reserved</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reserved-tables-body">
+                        <!-- Reserved tables will be dynamically added here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"><strong>Total</strong></td>
+                            <td><strong id="total-amount"></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <button id="cancel-button">Cancel Reservation</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="contact-info">
+                <p>1989 Billiards Street, Manila | Phone: (+63) 456-7890 | Email: info@cuebook.com</p>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/profile.php?id=61561739474115&mibextid=LQQJ4d"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="https://x.com/cuebook69?s=11&t=azPqdM20ugKR0tuqkKR4mw"><img src="twitter-icon.png" alt="Twitter"></a>
+                <a href="https://www.instagram.com/cuebook/?utm_source=ig_web_button_share_sheet"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        function signOut() {
+            firebase.auth().signOut().then(() => {
+                console.log('User signed out.');
+                window.location.href = "login.html";
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+            });
+        }
+
+        var firebaseConfig = {
+            apiKey: "AIzaSyAHEJtfNeC-sY7-b-j6FxEoiKrLr-FCTp4",
+            authDomain: "cuebook-23155.firebaseapp.com",
+            databaseURL: "https://cuebook-23155-default-rtdb.firebaseio.com",
+            projectId: "cuebook-23155",
+            storageBucket: "cuebook-23155.appspot.com",
+            messagingSenderId: "425152749588",
+            appId: "1:425152749588:web:5c2ab388175f6e11dfc701",
+            measurementId: "G-LDEG7PHHE2"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				console.log("User is logged in:", user);
+				var emailDisplay = document.getElementById("emailDisplay");
+				var nameDisplay = document.getElementById("nameDisplay");
+				var numberDisplay = document.getElementById("numberDisplay");
+				emailDisplay.innerText = "Email: " + user.email;
+
+				var database = firebase.database();
+				var userRef = database.ref('users/' + user.uid);
+				userRef.once('value', function(snapshot) {
+					var userData = snapshot.val();
+					if (userData) {
+						nameDisplay.innerText = userData.fullname;
+						numberDisplay.innerText = "Number: " + userData.phnum;
+						var profilePictureUrl = userData.profilePictureUrl;
+
+						var helloUser = document.getElementById("hello-user");
+						helloUser.innerText = "Hello, " + userData.fullname + "!";
+						document.getElementById("login").style.display = "none";
+						document.getElementById("signup").style.display = "none";
+						document.getElementById("hello-user").style.display = "block";
+						document.getElementById("signout").style.display = "block";
+
+						var profilePicture = document.getElementById("profile-picture");
+						if (profilePictureUrl) {
+							profilePicture.src = profilePictureUrl;
+						} else {
+							profilePicture.src = "cbprofile.png";
+						}
+					}
+				});
+
+				var reservationsRef = userRef.child('reservations');
+				reservationsRef.once('value', function(snapshot) {
+					var reservations = snapshot.val();
+					var sortedReservations = [];
+
+					// Convert reservations object to array for sorting
+					for (var key in reservations) {
+						if (reservations.hasOwnProperty(key)) {
+							var reservation = reservations[key];
+							reservation.reservationId = key; // Store reservation ID in the reservation object
+							sortedReservations.push(reservation);
+						}
+					}
+
+					// Sort reservations by date, time, and table in ascending order
+					sortedReservations.sort(function(a, b) {
+						// Compare dates first
+						var dateComparison = new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time);
+						if (dateComparison !== 0) {
+							return dateComparison;
+						}
+						
+						// If dates are equal, compare times
+						var timeComparison = new Date('1970/01/01 ' + a.time) - new Date('1970/01/01 ' + b.time);
+						if (timeComparison !== 0) {
+							return timeComparison;
+						}
+						
+						// If times are also equal, sort by table number
+						return a.table - b.table;
+					});
+
+					var historyList = document.getElementById('historyList');
+					historyList.innerHTML = ''; // Clear existing content
+
+					// Iterate through sorted reservations and create list items
+					sortedReservations.forEach(function(reservation) {
+						var listItem = document.createElement('li');
+						listItem.className = 'history-item';
+						listItem.dataset.reservationId = reservation.reservationId; // Use reservation ID from sorted array
+						listItem.innerHTML = '<p>' + reservation.date + ' - ' + reservation.time + ' | Table ' + reservation.table + '</p>';
+						
+						// Add click event to list item
+						listItem.addEventListener('click', function() {
+							var reservationId = this.dataset.reservationId;
+							showBookingReceipt(reservationId);
+						});
+
+						historyList.appendChild(listItem);
+					});
+				});
+
+			} else {
+				console.log("No user is logged in.");
+				document.getElementById("hello-user").style.display = "none";
+				document.getElementById("signout").style.display = "none";
+			}
+		});
+
+        function editField(fieldType) {
+			var containerId = fieldType === 'name' ? 'nameContainer' : 'numberContainer';
+			var container = document.getElementById(containerId);
+			var fieldValue = container.querySelector(fieldType === 'name' ? 'h1' : 'p'); // Select h1 for name, p for number
+			var currentValue = fieldType === 'name' ? fieldValue.innerText : fieldValue.innerText.split(': ')[1]; // Extract the value after ": " for number
+
+			var newValue = prompt("Enter new " + fieldType + ":", currentValue);
+
+			if (newValue !== null) {
+				newValue = newValue.trim(); // Remove leading and trailing whitespace
+
+				if (newValue !== '' && (fieldType === 'name' ? /^[a-zA-Z]+$/.test(newValue) : validateContactNumber(newValue))) {
+					// Update the display
+					fieldValue.innerText = fieldType === 'name' ? newValue : "Number: " + newValue;
+
+					// Update Firebase database if necessary
+					var user = firebase.auth().currentUser;
+					var database = firebase.database();
+					var userRef = database.ref('users/' + user.uid);
+					var updateData = {};
+
+					if (fieldType === 'name') {
+						updateData.fullname = newValue;
+					} else if (fieldType === 'number') {
+						updateData.phnum = newValue;
+					}
+
+					userRef.update(updateData)
+						.then(function () {
+							console.log(fieldType + ' updated successfully!');
+						})
+						.catch(function (error) {
+							console.error('Error updating ' + fieldType + ':', error);
+							// Revert the field value if update fails
+							fieldValue.innerText = fieldType === 'name' ? currentValue : "Number: " + currentValue;
+						});
+				} else {
+					if (newValue !== '') {
+						alert(fieldType === 'name' ? "Please enter a valid name." : "Invalid contact number. A valid phone number consists of 11 digits and starts with '09' or '+639'. Example: 09123456789 or +639123456789");
+					}
+				}
+			}
+		}
+
+		function validateContactNumber(contactNumber) {
+			var regex = /^(09|\+639)\d{9}$/;
+			return regex.test(contactNumber);
+		}
+
+
+        function handleFileUpload(event) {
+            var file = event.target.files[0];
+            var user = firebase.auth().currentUser;
+            var storageRef = firebase.storage().ref('profile_pictures/' + user.uid + '/' + file.name);
+            var uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed', function(snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            }, function(error) {
+                console.error('Upload failed:', error);
+            }, function() {
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    var profilePicture = document.getElementById("profile-picture");
+                    profilePicture.src = downloadURL;
+                    var userRef = firebase.database().ref('users/' + user.uid);
+                    userRef.update({ profilePictureUrl: downloadURL });
+                });
+            });
+        }
+
+		function showBookingReceipt(reservationId) {
+			var user = firebase.auth().currentUser;
+			var database = firebase.database();
+			var reservationRef = database.ref('users/' + user.uid + '/reservations/' + reservationId);
+			reservationRef.once('value', function(snapshot) {
+				var reservation = snapshot.val();
+				if (reservation) {
+					var guestName = reservation.firstName + ' ' + reservation.lastName;
+					document.getElementById('user-email').textContent = user.email;
+					document.getElementById('guest-name').textContent = guestName;
+					document.getElementById('transaction-id').textContent = reservationId;
+					document.getElementById('reservation-date').textContent = reservation.date;
+					document.getElementById('starting-time').textContent = reservation.time;
+
+					if (reservation.table !== undefined && reservation.table !== null) {
+						var reservedTablesBody = document.getElementById('reserved-tables-body');
+						var tableRows = '';
+						var pricePerHour = 50; // Assuming $50 per hour
+						var hoursReserved = reservation.hours; // Assuming hours is provided in the reservation
+
+						var totalPrice = pricePerHour * hoursReserved;
+
+						tableRows += '<tr>';
+						tableRows += '<td>Table ' + reservation.table + '</td>';
+						tableRows += '<td>' + hoursReserved + ' hour(s)</td>';
+						tableRows += '<td>$' + totalPrice.toFixed(2) + '</td>';
+						tableRows += '</tr>';
+
+						reservedTablesBody.innerHTML = tableRows;
+						document.getElementById('total-amount').textContent = '$' + totalPrice.toFixed(2);
+					} else {
+						console.log('No table found in the reservation.');
+					}
+
+					var modal = document.getElementById('bookingReceiptModal');
+					modal.style.display = 'block';
+
+					// Add event listener for the cancel button
+					var cancelButton = document.getElementById('cancel-button');
+					cancelButton.onclick = function() {
+						cancelReservation(reservationId); // Pass the correct reservationId to the cancel function
+					};
+
+					var downloadButton = document.getElementById('download-button');
+					downloadButton.addEventListener('click', function() {
+						var modalContent = document.getElementById('bookingReceiptDetails');
+						html2canvas(modalContent).then(canvas => {
+							var link = document.createElement('a');
+							link.href = canvas.toDataURL();
+							link.download = 'receipt.png';
+							link.click();
+						});
+					});
+				} else {
+					console.log('No reservation found for ID:', reservationId);
+				}
+			});
+		}
+
+		function cancelReservation(reservationId) {
+			var user = firebase.auth().currentUser;
+			var database = firebase.database();
+			var reservationRef = database.ref('users/' + user.uid + '/reservations/' + reservationId);
+
+			reservationRef.once('value')
+				.then(function(snapshot) {
+					var reservation = snapshot.val();
+					if (reservation) {
+						// Remove reservation from 'reservations' node
+						return reservationRef.remove()
+							.then(function() {
+								console.log("Reservation removed successfully from 'reservations' node.");
+
+								// Split year, month, and day from reservation.date
+								var dateParts = reservation.date.split('/'); // Assuming reservation.date is in 'YYYY-MM-DD' format
+								var month = dateParts[0];
+								var day = dateParts[1];
+								var year = dateParts[2];
+
+								// Construct the base path to the date in the 'Dates' node
+								var datePath = 'Dates/' + year + '/' + month + '/' + day + '/Table ' + reservation.table;
+
+								// Calculate number of hours reserved
+								var hoursReserved = parseInt(reservation.hours, 10);
+
+								// Calculate end times to remove based on reservation start time
+								var startTime = reservation.time;
+								var timesToRemove = [];
+								for (var i = 0; i < hoursReserved; i++) {
+									var hourToAdd = i;
+									var timeToRemove = addHours(startTime, hourToAdd);
+									timesToRemove.push(timeToRemove);
+								}
+
+								// Remove each calculated time slot and log the path
+								var promises = timesToRemove.map(function(time) {
+									var timeRef = database.ref(datePath + '/' + time);
+									return timeRef.remove()
+										.then(function() {
+											console.log("Reservation time removed successfully from 'Dates' node:", datePath + '/' + time);
+										})
+										.catch(function(error) {
+											console.error("Error removing reservation time:", error);
+										});
+								});
+
+								return Promise.all(promises); // Wait for all time slots to be removed
+							})
+							.then(function() {
+								closeBookingReceiptModal();
+								location.reload();
+							})
+							.catch(function(error) {
+								console.error("Error removing reservation:", error);
+							});
+					} else {
+						console.log("No reservation found for ID:", reservationId);
+					}
+				})
+				.catch(function(error) {
+					console.error("Error fetching reservation details:", error);
+				});
+		}
+
+
+		// Helper function to add hours to a time string
+		function addHours(timeString, hoursToAdd) {
+			var time = new Date('1970/01/01 ' + timeString);
+			time.setHours(time.getHours() + hoursToAdd);
+			var formattedTime = ('0' + time.getHours()).slice(-2) + ':' + ('0' + time.getMinutes()).slice(-2);
+			return formattedTime;
+		}
+
+		function closeBookingReceiptModal() {
+			var modal = document.getElementById('bookingReceiptModal');
+			modal.style.display = 'none';
+		}
+
+		window.addEventListener('load', function() {
+    	setTimeout(function() {
+        document.body.classList.remove('loading');
+        var loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'none'; // Hide the loader
+        }
+    }, 3000);
+});
+
+    </script>
+</body>
+</html>
